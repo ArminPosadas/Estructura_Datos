@@ -1,0 +1,22 @@
+Definiendo un codigo
+22/03/2024
+
+Template<typename Object> //define a toda la clase "lista"
+class SLList {
+public:
+	struct Node {
+		Object data; //data puede ser lo que yo quiera
+		Node *next; //se refiere al puntero del siguiente nodo
+
+		Node(const Object &d: Object = Object{}, Node *n = nullptr); //busca el nodo que sigue y si no encuentra regresa un null
+
+		Node(Object &&d, Node *n =nullptr); //son constructuras
+
+Class iterator { //hay una clase dentro de otra clase
+public:
+	iterator(); //se va a encargar de ordenar la lista
+	Object &operator*();
+	iterator &operator++();
+	const iterator operator++(int);
+	bool operator==(const iterator &rhs) const;
+	bool operator=(const iterator &rhs) const;

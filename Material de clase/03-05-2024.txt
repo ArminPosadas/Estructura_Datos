@@ -1,0 +1,7 @@
+Árbol: estructura de datos que permite una conexión con otros nodos.
+
+int: entero
+
+Izquierda es para menor, derecha es para mayor.
+
+Árbol binario avl puede balancearse solo

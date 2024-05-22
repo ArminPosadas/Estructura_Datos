@@ -1,0 +1,9 @@
+Comandos para hacer push a mi propia branch
+
+git checkout "nombre del Branch" (Para irme a mi Branch)
+
+echo "palabras" >> "Nombre del archivo >> APF.md
+
+git commit (Saldra una pantalla ahí le debo quitar los asteriscos a 3 líneas de código.)
+
+git push -u origin APF (Para hacer push a un archivo para mi propia branch
