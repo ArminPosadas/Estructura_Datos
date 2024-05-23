@@ -75,3 +75,17 @@ Finalmente le di en push con el nombre del repositorio al que deberian ir y a cu
 
 ![Captura8.png](Captura8.png)
 Aqui una muestra de como termino quedando dentro del repositorio remoto.
+
+Ahora realize cambios al documento y tengo que volver a hacer push, para eso regreso a la terminal y escribo
+
+![Captura9.png](Captura9.png)
+
+Agregara todos los archivos incluyendo los nuevos.
+
+![Captura10.png](Captura10.png)
+
+Luego se hace el commit con la descripcion del cambio para ya por ultimo darle un push.
+
+![Captura11.png](Captura11.png)
+
+De esa forma el repositorio ya esta completo con todos los trabajos que he hecho incluyendo este.
