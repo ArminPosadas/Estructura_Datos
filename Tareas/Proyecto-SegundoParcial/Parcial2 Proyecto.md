@@ -89,3 +89,5 @@ Luego se hace el commit con la descripcion del cambio para ya por ultimo darle u
 ![Captura11.png](Captura11.png)
 
 De esa forma el repositorio ya esta completo con todos los trabajos que he hecho incluyendo este.
+
+![Captura12.png](Captura12.png)
