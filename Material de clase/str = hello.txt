@@ -1,0 +1,7 @@
+str = "hello"
+hasinhg(str)
+"khoor"
+
+Toma las letras dentro de str y utiliza el sistema hasky en donde se mueven a 3 letras después.
+ejemplo del sistema hasky
+e-f-g-h

@@ -1,0 +1,32 @@
+Comandos para Linux "git"
+
+git init: Inicializa un repositorio local.
+
+git add <file>: Añadir los archivos que vayamos a subir
+
+git rev-list --count --all: Da el numero de commits que se realizaron en un repositorio.
+
+git dif: diferenciar entre un cambio y otro
+
+echo -n "texto aquí": Imprimir lo que escribiste en la terminal
+| openssl dgst -sha256: convierte el texto a sha
+
+git add -i: Te permite agregar un elemento por medio de un menú interactivo.
+
+$: va a tomar un dato.
+
+git reset -hard "nombre del nodo":Nodo al que quedemos volver.
+-soft: no toca archivos en el índice.
+-mixed: resetea los índices pero no los archivos.
+-hard: cambia absolutamente todo
+
+for i in ("punto a punto"); do git Branch -D branch$i ; git Branch -D orphan$i ; git tag -d tag$i; done
+Todo eso para eliminar Branch huérfanas yéndose desde el primer punto al ultimo punto
+
+git reset --soft Head~89: Sin forzar los cambio.
+
+
+Proyecto: subir los códigos y documentaciones que hemos visto en GitHub, en consola y mostrar el procedimiento (Nota será en un repositorio creado por nosotros.)
+-Los archivos que hicimos durante el semestre.
+-Explicar el branching que hicimos la otra vez.
+-Realizar explicación de lo que hicimos en markdown.
