@@ -233,7 +233,8 @@ int nextIndex(int currentIndex, int value, int i) const {
                 return (currentIndex + 1) % tableSize;
             case QUADRATIC_PROBING:
                 return (currentIndex + i * i) % tableSize;
-            case DOUBLE_HASHING:
+         [..](..)
+[Clase 10042024](..%2F..%2FClase%2010042024)   case DOUBLE_HASHING:
                 return (currentIndex + secondHashFunction(value)) % tableSize;
             case ROBIN_HOOD:
                 return (currentIndex + 1) % tableSize;

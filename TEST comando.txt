@@ -1,0 +1,9 @@
+gtest/gtest
+
+TEST: Realiza pruebas del código para checar que funcione.
+
+auto start "high_resolution_clock" inicia un cronometro
+
+auto send "high_resolution_clock" finaliza el cronometro.
+
+chrono::duration elapsed = end - start Se encarga de checar el tiempo en el que tardo.
