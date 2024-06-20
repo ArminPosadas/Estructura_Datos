@@ -322,6 +322,251 @@ bool isSorted(const std::vector<T>& arr) {
 Por ultimo en esta seccion se crea un booliano que indicara si un array ya esta ordenado checando si el digito siguiente
 es mayor al actual y dara un true, esta funcion sera usada en el siguiente apartado como forma de comprobar que el metodo
 usado si organizo el array.
+```
+void splitAndSort(const std::string& inputFile, const std::string& tempFilePrefix, int chunkSize) {
+    std::ifstream input(inputFile);
+    int fileCount = 0;
+
+    while (input) {
+        std::vector<int> numbers;
+        for (int i = 0; i < chunkSize && input; i++) {
+            int number;
+            input >> number;
+            numbers.push_back(number);
+        }
+
+        std::sort(numbers.begin(), numbers.end());
+
+        std::ofstream tempFile(tempFilePrefix + std::to_string(fileCount));
+        for (int number : numbers) {
+            tempFile << number << " ";
+        }
+
+        fileCount++;
+    }
+}
+```
+Metodo split and sort
+
+Se encarga de leer números enteros de un archivo de entrada, los divide en fragmentos más pequeños, ordena cada
+fragmento y escribe los fragmentos ordenados en archivos temporales. Esto se logra cuando se abre el archivo de entrada 
+para leer usando "ifstream", luego se inicializa fileCount para realizar un seguimiento del número de archivos temporales 
+creados, luego se utiliza un bucle while para procesar el archivo de entrada hasta que se lean todos los números enteros.
+Se crea un vector llamado "number" para almacenar los números enteros del fragmento actual luego se lee los números 
+enteros de tamaño de fragmento del archivo de entrada y los agrega al vector de "number".
+
+Luego se ordena el vector de números en orden ascendente usando "sort" despues se crea un archivo de salida temporal con 
+un nombre basado en "tempFile Prefix" y "file Count", escribe los números enteros ordenados en el archivo temporal, 
+separados por espacios y al final incrementa el recuento de archivos para prepararse para el siguiente chunk.
+
+.
+
+
+```
+void merge(const std::string& outputFile, const std::string& tempFilePrefix, int fileCount) {
+    std::ofstream output(outputFile);
+    std::vector<std::ifstream> tempFiles(fileCount);
+
+    for (int i = 0; i < fileCount; i++) {
+        tempFiles[i].open(tempFilePrefix + std::to_string(i));
+    }
+
+    std::vector<int> currentNumbers(fileCount, 0);
+    std::vector<bool> isFileEmpty(fileCount, false);
+    int emptyFileCount = 0;
+
+    for (int i = 0; i < fileCount; i++) {
+        if (!(tempFiles[i] >> currentNumbers[i])) {
+            isFileEmpty[i] = true;
+            emptyFileCount++;
+        }
+    }
+
+    while (emptyFileCount < fileCount) {
+        int minIndex = -1;
+        for (int i = 0; i < fileCount; i++) {
+            if (!isFileEmpty[i] && (minIndex == -1 || currentNumbers[i] < currentNumbers[minIndex])) {
+                minIndex = i;
+            }
+        }
+
+        output << currentNumbers[minIndex] << " ";
+
+        if (!(tempFiles[minIndex] >> currentNumbers[minIndex])) {
+            isFileEmpty[minIndex] = true;
+            emptyFileCount++;
+        }
+    }
+}
+```
+Metodo merge.
+
+La función merge fusiona chunks ordenados de números enteros de múltiples archivos temporales en un único archivo 
+de salida ordenado, para eso primero se abre el archivo de salida para escribir usando un ofstream, luego crea un vector
+"tempFiles" de objetos "ifstream" con un tamaño de "fileCount". Se abre cada archivo temporal usando un bucle, agregando 
+el índice i a "tempFilePrefix" para obtener los nombres de los archivos. Crea un vector currentNumbers para almacenar el 
+número actual leído de cada archivo temporal. Luego se crea un vector llamado "isFileEmpty" para rastrear si cada archivo 
+temporal se ha leído por completo, luego se inicializa "emptyFileCount" para realizar un seguimiento del número de 
+archivos vacíos, se lee el primer número de cada archivo temporal en "currentNumbers" y actualiza "isFileEmpty" y 
+"vacíoFileCount" en consecuencia.
+
+En el primer bucle usan un "while" para continuar fusionando hasta que todos los archivos estén vacíos ("emptyFileCount"
+es igual a "fileCount"), se inicializa "minIndex" para rastrear el índice del archivo temporal con el número actual más pequeño.
+Recorre los Números actuales para encontrar el número más pequeño que no se ha marcado como de un archivo vacío.
+
+Escribe el número actual más pequeño (currentNumbers[minIndex]) en el archivo de salida, Lee el siguiente número del 
+archivo temporal en minIndex. Si el archivo en minIndex está agotado, se actualiza "isFileEmpty" y "vacíoFileCount".
+```
+void externalSort(const std::string& inputFile, const std::string& outputFile, int chunkSize) {
+    std::string tempFilePrefix = "temp";
+    splitAndSort(inputFile, tempFilePrefix, chunkSize);
+    merge(outputFile, tempFilePrefix, chunkSize);
+}
+```
+Metodo External sort.
+
+primero se define un prefijo para los archivos temporales utilizados para almacenar fragmentos ordenados usando "temp".
+Luego Llama al metodo splitAndSort junto a "inputFile, tempFilePrefix, chunkSize", se lee números enteros de "inputFile"
+en fragmentos de tamaño "chunkSize" y ordena cada chunk y escribe los fragmentos ordenados en archivos temporales 
+con nombres basados en "tempFilePrefix". Al final se Llama al metodo merge junto a "outputFile, tempFilePrefix, chunkSize"
+,  Fusiona los chunks ordenados de los archivos temporales nuevamente en una única secuencia ordenada y se escribe la 
+secuencia ordenada final en "OutputFile".
+```
+struct Element {
+    int value;
+    int fileIndex;
+
+    Element(int value, int fileIndex) : value(value), fileIndex(fileIndex) {}
+};
+```
+Esta es una estructura "Element" la cual es una estructura de datos simple que se utilizara para almacenar un valor entero 
+y un índice de archivo asociado para futuros metodos
+```
+struct Compare {
+    bool operator()(const Element& a, const Element& b) {
+        return a.value > b.value;
+    }
+};
+```
+La estructura "Compare" proporciona un comparador personalizado para comparar dos objetos de tipo "Element" según su 
+atributo de valor. Este comparador se utiliza normalmente con colas de prioridad (específicamente, un montón mínimo) 
+para garantizar que los elementos estén ordenados correctamente.
+```
+void externalMultiwayMerge(const std::string& outputFile, const std::string& tempFilePrefix, int fileCount) {
+    std::priority_queue<Element, std::vector<Element>, Compare> minHeap;
+    std::vector<std::ifstream> tempFiles(fileCount);
+    std::vector<int> currentNumbers(fileCount, 0);
+    std::vector<bool> isFileEmpty(fileCount, false);
+    int emptyFileCount = 0;
+
+    for (int i = 0; i < fileCount; i++) {
+        tempFiles[i].open(tempFilePrefix + std::to_string(i));
+        if (!(tempFiles[i] >> currentNumbers[i])) {
+            isFileEmpty[i] = true;
+            emptyFileCount++;
+        } else {
+            minHeap.push(Element(currentNumbers[i], i));
+        }
+    }
+
+    std::ofstream output(outputFile);
+
+    while (!minHeap.empty()) {
+        Element minElement = minHeap.top();
+        minHeap.pop();
+        output << minElement.value << " ";
+
+        if (!(tempFiles[minElement.fileIndex] >> currentNumbers[minElement.fileIndex])) {
+            isFileEmpty[minElement.fileIndex] = true;
+            emptyFileCount++;
+        } else {
+            minHeap.push(Element(currentNumbers[minElement.fileIndex], minElement.fileIndex));
+        }
+    }
+}
+```
+Metodo External Multiway Merge
+
+Primero crea un montón mínimo usando "priority_queue" con el comparador personalizado Comparar.
+Luego inicializa varias funciones empezando por: un vector llamado "tempFiles" para contener objetos "ifstream" para 
+cada archivo temporal, Un vector llamado "CurrentNumbers" para contener el número actual leído de cada archivo temporal,
+un vector llamado "isFileEmpty" para rastrear si cada archivo temporal está agotado y un "emptyFileCount" para realizar 
+un seguimiento del número de archivos vacíos.
+
+Luego se abre cada archivo temporal y lee el primer número en números actuales.
+Si un archivo se lee correctamente, su primer número se inserta en minHeap como un elemento.
+Si un archivo está vacío o no se puede leer, isFileEmpty para ese archivo se establece en verdadero y se incrementa el 
+número de archivos vacíos.
+
+Al final se abre el archivo de salida para escribir.
+Continúa fusionándose hasta que el montón mínimo esté vacío.
+Extrae el elemento más pequeño (minElement) del montón mínimo.
+Escribe el valor de minElement en el archivo de salida.
+Lee el siguiente número del archivo del que procede "minElement".
+Si el archivo aún tiene más números, el nuevo número se inserta en el montón mínimo como un nuevo elemento.
+Y si el archivo está agotado, se actualiza "isFileEmpty" y "emptyFileCount".
+
+```
+void polyphaseMerge(const std::string& outputFile, const std::string& tempFilePrefix, int fileCount) {
+    std::priority_queue<Element, std::vector<Element>, Compare> minHeap;
+    std::vector<std::ifstream> tempFiles(fileCount);
+    std::vector<int> currentNumbers(fileCount, 0);
+    std::vector<bool> isFileEmpty(fileCount, false);
+    int emptyFileCount = 0;
+
+    for (int i = 0; i < fileCount; i++) {
+        tempFiles[i].open(tempFilePrefix + std::to_string(i));
+        if (!(tempFiles[i] >> currentNumbers[i])) {
+            isFileEmpty[i] = true;
+            emptyFileCount++;
+        } else {
+            minHeap.push(Element(currentNumbers[i], i));
+        }
+    }
+
+    std::ofstream output(outputFile);
+
+    while (!minHeap.empty()) {
+        Element minElement = minHeap.top();
+        minHeap.pop();
+        output << minElement.value << " ";
+
+        if (!(tempFiles[minElement.fileIndex] >> currentNumbers[minElement.fileIndex])) {
+            isFileEmpty[minElement.fileIndex] = true;
+            emptyFileCount++;
+            if (emptyFileCount == 1) {
+                tempFiles[minElement.fileIndex].close();
+                tempFiles[minElement.fileIndex].open(tempFilePrefix + std::to_string(fileCount));
+                if (tempFiles[minElement.fileIndex] >> currentNumbers[minElement.fileIndex]) {
+                    isFileEmpty[minElement.fileIndex] = false;
+                    emptyFileCount--;
+                    minHeap.push(Element(currentNumbers[minElement.fileIndex], minElement.fileIndex));
+                }
+            }
+        } else {
+            minHeap.push(Element(currentNumbers[minElement.fileIndex], minElement.fileIndex));
+        }
+    }
+}
+```
+Metodo Poly Phase Merge
+
+Este metodo implementa una clasificación de fusión polifásica, que es una forma más avanzada de 
+clasificación externa que tiene como objetivo reducir la cantidad de operaciones de E/S haciendo un uso más eficiente 
+de los archivos temporales.
+
+Primero se configura un montón mínimo (std::priority_queue) para contener objetos "Element".
+Abre los archivos temporales y lee el primer número de cada archivo.
+Si un archivo se lee correctamente, su primer número se inserta en el montón mínimo.
+Si un archivo está vacío o no se puede leer, se marca como vacío.
+
+Luego abre el archivo de salida para escribir.
+Extrae continuamente el elemento más pequeño del montón mínimo.
+Escribe el elemento más pequeño en el archivo de salida.
+Lee el siguiente número del archivo del que proviene el elemento más pequeño y lo coloca en el montón mínimo.
+Si un archivo queda vacío y solo hay un archivo vacío, intenta reabrir un nuevo archivo temporal (esta parte está 
+destinada a implementar la fusión polifásica pero está incompleta y es incorrecta).
+
 
 # **Apartado del testeo**
 
